@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+	<title>Игра в 15</title>
+	<style>
+	   td{
+	   background-color: #0099cc;
+	   width:120px;
+	   height: 120px;
+	   text-align: center;
+	   font-size:53px;
+	   color: white;
+	   font-family: Arial, Helvetica, sans-serif;
+	   border: 1px solid;
+	   border-radius: 6px;
+	   }
+	   table{
+	       border: 5px solid #bdbebd;
+		   border-radius: 5px;
+		   margin:auto;
+		    margin-top:30px;
+	   }
+	   button{
+	       color: #6a6a6a;
+	       border: 3px solid #bdbebd;
+		   border-radius: 5px;
+	       font-family: Arial, Helvetica, sans-serif;
+		   font-size:16px;
+	       text-align: center;
+		   margin:auto;
+	       display:block;
+	       width:420px;
+	       height: 40px;
+	   }
+	</style>
+</head>
+<body>
+    <button id="pin">Перегрупировать</button>
+    <table id="field">
+    </table>
+    <script type="text/javascript">
+		let s = 0;
+		let k = 0;
+		let k1 = 3;
+		let k2 = 3;
+		let inver = 0;
+	    let a=[];
+		a[0]=[];
+		a[1]=[];
+		a[2]=[];
+		a[3]=[];
+		let arr=[];
+		
+		function shuffle(){
+		    for (let i = 0; i < 15; i++)
+                arr[i] = i + 1;
+			for (let i = 14; i > 0; i--)
+            {
+                let j = Math.floor(Math.random() * 14);
+				 var t = arr[j];
+                 arr[j] = arr[i];
+                 arr[i] = t;
+            }
+			arr[15]=0;
+			solvable();
+		    for(let i = 0;i < 4; i++) {
+		        for(let j = 0 ;j < 4; j++) {
+			       a[i][j]=arr[s];
+			       s += 1;
+			    }
+		    } 
+			s = 0;
+		}
+		shuffle();
+		
+		pin.onclick = function() {
+		    k1 = 3;
+		    k2 = 3;
+		    while(field.rows.length > 0) {
+               field.deleteRow(0);
+            }
+			shuffle();
+			showBoard();
+		}
+		
+		function solvable(){
+		   for(let i = 0;i < 15; i++)
+			      for(let j = i; j < 15; j++)
+				       if(arr[i] > arr[j])
+					       inver += 1;
+			if(inver%2 == 1){
+			    t = arr[14];
+				arr[14] = arr[13];
+				arr[13] = t;
+			}
+			inver = 0;
+		}
+		
+		var field = document.getElementById("field");
+		function showBoard() {
+		    field = document.getElementById("field");
+		    for(let i = 0; i < 4; i++) {
+		    let row = document.createElement("tr");
+			field.append(row);
+			for(let j = 0; j < 4; j++) {
+			var cell = document.createElement("td");
+			row.append(cell);
+			let v=a[i][j];
+			if(!(i == k1 && j == k2))
+			cell.append(document.createTextNode(v));
+			cell.onclick = function() {
+				k1 = i;
+				k2 = j;
+				if(j < 3 && a[i][j+1] == 0) {
+				    a[i][j+1] = a[i][j];
+					a[i][j] = 0;
+				    cangeBoard();
+				}
+				if(i < 3  &&  a[i+1][j] == 0) {
+				    a[i+1][j] = a[i][j];
+					a[i][j] = 0;
+				    cangeBoard();
+				}
+				if(i > 0 && a[i-1][j] == 0 ) {
+				    a[i-1][j] = a[i][j];
+					a[i][j] = 0;
+				    cangeBoard();
+				}
+				if(j > 0 && a[i][j-1] == 0 ) {
+				    a[i][j-1] = a[i][j];
+					a[i][j] = 0;
+				    cangeBoard();
+				    }
+			    }
+		    }
+	    }
+	}
+	
+	function Win(){
+	    s = 0;
+	    for(let i = 0;i < 4; i++) {
+	        for(let j = 0;j < 4; j++) {
+		        if(a[i][j] != i*4 + j + 1 && a[i][j] != 0)
+			        return false
+		    }
+	    }
+	    return true;
+	}
+	
+	showBoard();
+	function cangeBoard(){
+	while(field.rows.length > 0) {
+        field.deleteRow(0);
+    }
+	   showBoard();
+	   if(Win())
+		   alert("ты победил)");
+	}
+	</script>
+</body>
+</html>
